@@ -46,6 +46,8 @@ int main(int argc, char * argv[])
 
   // endpoint positions in a single column
   Eigen::VectorXd xb0 = transformed_tips(skeleton,b);
+  std::cout << "b is " << b.transpose() << "\n";
+
 
   // U will track the deforming mesh
   U = V;
@@ -88,7 +90,7 @@ int main(int argc, char * argv[])
   v.data_list[skeleton_id].set_mesh(SV,SF);
   v.data_list[skeleton_id].set_colors(SC);
   v.data_list[skeleton_id].set_face_based(true);
-  v.core.animation_max_fps = 30.;
+  v.core.animation_max_fps = 4;
   v.core.is_animating = true;
 
   double anim_last_t = igl::get_seconds();
@@ -136,9 +138,9 @@ int main(int argc, char * argv[])
     // If in debug mode use 1 ik iteration per drawn frame, otherwise 100
     const int max_iters =
 #if NDEBUG
-      100;
-#else
       1;
+#else
+      100;
 #endif
     // Gather initial angles
     Eigen::VectorXd A(skeleton.size()*3);
@@ -176,7 +178,7 @@ int main(int argc, char * argv[])
       // Robot-arm
       for(int b = 0;b<skeleton.size();b++)
       {
-        skeleton[b].xzx = catmull_rom_interpolation( fk_anim[b],anim_t);
+        skeleton[b].xzx = catmull_rom_interpolation( fk_anim[b],anim_t / 100);
       }
     }
     update();
